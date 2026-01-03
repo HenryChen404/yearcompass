@@ -25,7 +25,7 @@ interface WeekCalendarProps {
   onCellClick?: (dayIndex: number, hour: number) => void;
 }
 
-const HOURS = Array.from({ length: 16 }, (_, i) => i + 6); // 6:00 - 21:00
+const HOURS = Array.from({ length: 14 }, (_, i) => i + 7); // 7:00 - 20:00 (reduced to show more per screen)
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export function WeekCalendar({
@@ -120,7 +120,7 @@ export function WeekCalendar({
               className="grid grid-cols-[40px_repeat(7,minmax(60px,1fr))] md:grid-cols-[50px_repeat(7,1fr)]"
             >
               {/* Time Label */}
-              <div className="calendar-time border-b border-[var(--color-border-subtle)] h-10 md:h-12 text-[10px] md:text-xs">
+              <div className="calendar-time border-b border-[var(--color-border-subtle)] h-12 md:h-12 text-[10px] md:text-xs">
                 {hour}:00
               </div>
 
@@ -134,7 +134,7 @@ export function WeekCalendar({
                   <div
                     key={dayIndex}
                     className={`
-                      border-l border-b border-[var(--color-border-subtle)] h-10 md:h-12 relative
+                      border-l border-b border-[var(--color-border-subtle)] h-12 relative
                       ${isDropTarget ? 'bg-blue-50' : ''}
                       ${hasSelectedTask ? 'cursor-pointer hover:bg-blue-50/50' : ''}
                     `}
@@ -147,7 +147,7 @@ export function WeekCalendar({
                       // 只在任务开始的小时渲染
                       if (task.startHour !== hour) return null;
 
-                      const heightPx = task.duration * 40; // 40px per hour on mobile, 48px on desktop
+                      const heightPx = task.duration * 48; // 48px per hour (h-12 = 3rem = 48px)
 
                       return (
                         <div
@@ -168,7 +168,7 @@ export function WeekCalendar({
                               e.stopPropagation();
                               onTaskRemove(task.id);
                             }}
-                            className="absolute top-0.5 right-0.5 w-4 h-4 flex items-center justify-center text-xs opacity-0 hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500"
+                            className="absolute top-0.5 right-0.5 w-4 h-4 flex items-center justify-center text-xs rounded-full bg-red-100 md:bg-transparent text-red-500 md:text-gray-400 md:opacity-0 md:hover:opacity-100 md:hover:text-red-500 md:hover:bg-red-50 transition-all"
                           >
                             ×
                           </button>
