@@ -201,8 +201,8 @@ export default function HomePage() {
         <GoalsHeader progress={goalProgress} />
       </div>
 
-      {/* Mobile: Sticky Brand Bar only */}
-      <div className="md:hidden sticky top-0 z-40 bg-white border-b border-[var(--color-border)] px-4 py-2">
+      {/* Mobile: Fixed Brand Bar - uses fixed instead of sticky to avoid WeChat browser flicker */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-[var(--color-border)] px-4 py-2">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-display text-sm tracking-[0.15em] leading-tight">YEARCOMPASS</h1>
@@ -301,7 +301,8 @@ export default function HomePage() {
       </div>
 
       {/* Mobile: Vertical Stack Layout - Full page scroll */}
-      <div className="md:hidden flex-1 overflow-auto pb-28">
+      {/* pt-12 accounts for fixed brand bar height */}
+      <div className="md:hidden flex-1 overflow-auto pb-28 pt-12">
         {/* Goals Cards - scrollable, can be scrolled away */}
         <div className="bg-white">
           <GoalsHeader progress={goalProgress} showBrandBar={false} />
