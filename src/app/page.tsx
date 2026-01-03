@@ -291,10 +291,23 @@ export default function HomePage() {
         <div className="sticky top-0 z-40 bg-white border-b border-[var(--color-border)] px-4 py-2 overflow-hidden">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
-              <h1 className="text-display text-sm tracking-[0.15em] leading-tight truncate">YEARCOMPASS</h1>
-              <p className="text-[10px] text-[var(--color-text-secondary)] truncate">{YEAR_THEME.title}</p>
+              <h1
+                className="text-display tracking-[0.15em] leading-tight"
+                style={{ fontSize: 'clamp(10px, 3.5vw, 14px)' }}
+              >
+                YEARCOMPASS
+              </h1>
+              <p
+                className="text-[var(--color-text-secondary)]"
+                style={{ fontSize: 'clamp(8px, 2.5vw, 10px)' }}
+              >
+                {YEAR_THEME.title}
+              </p>
             </div>
-            <p className="flex-shrink-0 text-display text-sm font-mono tracking-wider leading-tight bg-gradient-to-r from-[#FF6B6B] via-[#4ECDC4] to-[#45B7D1] bg-clip-text text-transparent animate-pulse">
+            <p
+              className="flex-shrink-0 text-display font-mono tracking-wider leading-tight bg-gradient-to-r from-[#FF6B6B] via-[#4ECDC4] to-[#45B7D1] bg-clip-text text-transparent animate-pulse"
+              style={{ fontSize: 'clamp(12px, 4vw, 14px)' }}
+            >
               {YEAR_THEME.year}
             </p>
           </div>
