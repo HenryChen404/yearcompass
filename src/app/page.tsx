@@ -288,13 +288,13 @@ export default function HomePage() {
       {/* Mobile: Vertical Stack Layout - Full page scroll */}
       <div className="md:hidden flex-1 overflow-auto pb-28">
         {/* Brand Bar - sticky at top within scroll container */}
-        <div className="sticky top-0 z-40 bg-white border-b border-[var(--color-border)] px-4 py-2">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-display text-sm tracking-[0.15em] leading-tight">YEARCOMPASS</h1>
-              <p className="text-[10px] text-[var(--color-text-secondary)]">{YEAR_THEME.title}</p>
+        <div className="sticky top-0 z-40 bg-white border-b border-[var(--color-border)] px-4 py-2 overflow-hidden">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-display text-sm tracking-[0.15em] leading-tight truncate">YEARCOMPASS</h1>
+              <p className="text-[10px] text-[var(--color-text-secondary)] truncate">{YEAR_THEME.title}</p>
             </div>
-            <p className="text-display text-sm font-mono tracking-wider leading-tight bg-gradient-to-r from-[#FF6B6B] via-[#4ECDC4] to-[#45B7D1] bg-clip-text text-transparent animate-pulse">
+            <p className="flex-shrink-0 text-display text-sm font-mono tracking-wider leading-tight bg-gradient-to-r from-[#FF6B6B] via-[#4ECDC4] to-[#45B7D1] bg-clip-text text-transparent animate-pulse">
               {YEAR_THEME.year}
             </p>
           </div>

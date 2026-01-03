@@ -106,7 +106,8 @@ export function GoalsHeader({ progress, showBrandBar = true }: GoalsHeaderProps)
                 </h3>
 
                 {/* Layer 2: Objective - 目标 (shown on both mobile and desktop) */}
-                <p className="flex-shrink-0 text-[10px] md:text-xs text-black/90 leading-snug text-left line-clamp-2">
+                {/* Mobile: fixed 2-line height for alignment; Desktop: auto height */}
+                <p className="flex-shrink-0 text-[10px] md:text-xs text-black/90 leading-snug text-left line-clamp-2 h-[2.75em] md:h-auto">
                   {goal.objective}
                 </p>
 
