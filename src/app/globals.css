@@ -1,26 +1,374 @@
 @import "tailwindcss";
 
+/*
+ * YearCompass Design System
+ * Inspired by: MoMA/MET + Impressionism (Monet, Van Gogh, Gauguin)
+ * Light theme with warm, painterly accents
+ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core Colors - Light Mode (Gallery White) */
+  --color-bg-primary: #FAFAFA;
+  --color-bg-secondary: #F5F5F5;
+  --color-bg-card: #FFFFFF;
+  --color-bg-elevated: #FFFFFF;
+
+  /* Text Colors - Darker for better readability */
+  --color-text-primary: #111111;
+  --color-text-secondary: #4B5563;
+  --color-text-muted: #6B7280;
+
+  /* Impressionist Palette - warm, natural tones */
+  --color-work: #4A90A4;       /* Water Lilies blue */
+  --color-build: #E07B39;      /* Van Gogh orange/sunset */
+  --color-health: #7CB342;     /* Monet garden green */
+  --color-relationships: #D4A574; /* Warm ochre/gold */
+
+  /* Accent Colors */
+  --color-accent-primary: #2D5A7B;   /* Deep impressionist blue */
+  --color-accent-warm: #C9A227;      /* Golden hour */
+
+  /* Borders */
+  --color-border: #E5E7EB;
+  --color-border-subtle: #F3F4F6;
+
+  /* Shadows - softer for light mode */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.08);
+
+  /* Typography */
+  --font-display: var(--font-geist-sans);
+  --font-body: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Spacing */
+  --spacing-page: 2rem;
+  --spacing-section: 3rem;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+
+  /* Calendar specific */
+  --calendar-hour-height: 48px;
+  --calendar-header-height: 40px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--color-bg-primary);
+  --color-foreground: var(--color-text-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base Styles */
+body {
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Typography Scale - Clear Hierarchy */
+.text-display {
+  font-size: 1.75rem;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.text-headline {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+}
+
+.text-subhead {
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.text-body {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.text-body-sm {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.text-caption {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.text-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.text-small {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.text-tiny {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+}
+
+/* Art Strip - Impressionist painting slice as divider */
+.art-strip {
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    #7EB6C9 0%,      /* Monet water */
+    #9BC4A5 15%,     /* Garden green */
+    #E8D4A8 30%,     /* Wheat field */
+    #F4C67A 45%,     /* Sunflower yellow */
+    #E07B39 60%,     /* Van Gogh orange */
+    #C4A6D4 75%,     /* Lavender */
+    #7EB6C9 90%,     /* Back to water */
+    #9BC4A5 100%
+  );
+  border-radius: 2px;
+}
+
+.art-strip-vertical {
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    #7EB6C9 0%,
+    #9BC4A5 25%,
+    #F4C67A 50%,
+    #E07B39 75%,
+    #C4A6D4 100%
+  );
+  border-radius: 2px;
+}
+
+/* Card Styles - Gallery Feel */
+.card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  transition: all var(--transition-normal);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-card);
+}
+
+/* Progress Bar - Painterly gradient */
+.progress-bar {
+  background: var(--color-bg-secondary);
+  border-radius: 2px;
+  overflow: hidden;
+  height: 6px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width var(--transition-normal);
+}
+
+.progress-bar-fill.work {
+  background: linear-gradient(90deg, #4A90A4, #7EB6C9);
+}
+
+.progress-bar-fill.build {
+  background: linear-gradient(90deg, #E07B39, #F4C67A);
+}
+
+.progress-bar-fill.health {
+  background: linear-gradient(90deg, #7CB342, #9BC4A5);
+}
+
+.progress-bar-fill.relationships {
+  background: linear-gradient(90deg, #D4A574, #E8D4A8);
+}
+
+/* Task Block - Calendar event style */
+.task-block {
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: grab;
+  transition: all var(--transition-fast);
+  border-left: 3px solid;
+}
+
+.task-block:active {
+  cursor: grabbing;
+}
+
+.task-block.work {
+  background: rgba(74, 144, 164, 0.15);
+  border-left-color: var(--color-work);
+  color: #2D5A7B;
+}
+
+.task-block.build {
+  background: rgba(224, 123, 57, 0.15);
+  border-left-color: var(--color-build);
+  color: #8B4513;
+}
+
+.task-block.health {
+  background: rgba(124, 179, 66, 0.15);
+  border-left-color: var(--color-health);
+  color: #4A6B2A;
+}
+
+.task-block.relationships {
+  background: rgba(212, 165, 116, 0.15);
+  border-left-color: var(--color-relationships);
+  color: #8B6914;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: 50px repeat(7, 1fr);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-bg-card);
+}
+
+.calendar-header {
+  display: contents;
+}
+
+.calendar-header > div {
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.calendar-time {
+  padding: 0 8px;
+  font-size: 0.625rem;
+  color: var(--color-text-muted);
+  text-align: right;
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+.calendar-cell {
+  border-right: 1px solid var(--color-border-subtle);
+  border-bottom: 1px solid var(--color-border-subtle);
+  min-height: var(--calendar-hour-height);
+  position: relative;
+}
+
+.calendar-cell:last-child {
+  border-right: none;
+}
+
+.calendar-cell.drop-target {
+  background: rgba(74, 144, 164, 0.08);
+}
+
+/* Draggable Task Chip */
+.task-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: grab;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.task-chip:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+.task-chip:active {
+  cursor: grabbing;
+}
+
+.task-chip.work {
+  background: rgba(74, 144, 164, 0.12);
+  color: #2D5A7B;
+}
+
+.task-chip.build {
+  background: rgba(224, 123, 57, 0.12);
+  color: #8B4513;
+}
+
+.task-chip.health {
+  background: rgba(124, 179, 66, 0.12);
+  color: #4A6B2A;
+}
+
+.task-chip.relationships {
+  background: rgba(212, 165, 116, 0.12);
+  color: #8B6914;
+}
+
+/* Focus States */
+*:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: rgba(45, 90, 123, 0.2);
+  color: var(--color-text-primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
 }
