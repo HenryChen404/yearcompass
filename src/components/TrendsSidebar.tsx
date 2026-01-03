@@ -1,6 +1,6 @@
 /**
- * [INPUT]: GOALS 配置, 进度数据
- * [OUTPUT]: 左侧趋势图栏组件 - 迷你趋势图展示
+ * [INPUT]: GOALS 配置, 进度数据, useTrendData Hook
+ * [OUTPUT]: 左侧趋势图栏组件 - 迷你趋势图展示（真实数据）
  * [POS]: 首页核心组件，左侧显示进度趋势
  *
  * [PROTOCOL]:
@@ -18,6 +18,7 @@ import {
   YAxis,
 } from 'recharts';
 import { GOALS, GOAL_CATEGORIES } from '@/core/goals';
+import { useTrendData, calculateChartPadding } from '@/hooks/useTrendData';
 import type { GoalCategory } from '@/types/goals';
 
 interface ProgressData {
@@ -32,24 +33,10 @@ interface TrendsSidebarProps {
 // 梵高杏花 - Almond Blossoms
 const ARTWORK_URL = 'https://upload.wikimedia.org/wikipedia/commons/6/68/Vincent_van_Gogh_-_Almond_blossom_-_Google_Art_Project.jpg';
 
-// Mock 趋势数据 - 最近8周
-const generateMiniTrendData = () => {
-  const data = [];
-  for (let week = 1; week <= 8; week++) {
-    data.push({
-      week,
-      work: Math.floor(40 + Math.random() * 40 + week * 3),
-      build: Math.floor(20 + Math.random() * 30 + week * 2),
-      health: Math.floor(50 + Math.random() * 35 + week * 3),
-      relationships: Math.floor(60 + Math.random() * 25 + week * 1.5),
-    });
-  }
-  return data;
-};
-
-const TREND_DATA = generateMiniTrendData();
-
 export function TrendsSidebar({ progress }: TrendsSidebarProps) {
+  const { data: trendData, currentWeek, hasData, hasCategoryData } = useTrendData(8);
+  const padding = calculateChartPadding(trendData.length);
+
   return (
     <aside className="w-48 flex-shrink-0 bg-white rounded-lg shadow-sm h-full flex flex-col overflow-hidden">
       {/* Header with Artwork Background */}
@@ -67,7 +54,7 @@ export function TrendsSidebar({ progress }: TrendsSidebarProps) {
             TRENDS
           </h3>
           <p className="text-tiny text-white/80 mt-0.5">
-            最近 8 周趋势
+            {hasData ? `W${trendData[0]?.week || 1} - W${trendData[trendData.length - 1]?.week}` : '暂无数据'}
           </p>
         </div>
       </div>
@@ -108,24 +95,38 @@ export function TrendsSidebar({ progress }: TrendsSidebarProps) {
 
                 {/* Mini Chart */}
                 <div className="h-10">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={TREND_DATA}>
-                      <defs>
-                        <linearGradient id={`mini-gradient-${category}`} x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={goal.color} stopOpacity={0.4}/>
-                          <stop offset="95%" stopColor={goal.color} stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <YAxis domain={[0, 100]} hide />
-                      <Area
-                        type="monotone"
-                        dataKey={category}
-                        stroke={goal.color}
-                        strokeWidth={1.5}
-                        fill={`url(#mini-gradient-${category})`}
+                  {hasCategoryData[category] ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart
+                        data={trendData}
+                        margin={{ left: padding.left, right: padding.right }}
+                      >
+                        <defs>
+                          <linearGradient id={`mini-gradient-${category}`} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor={goal.color} stopOpacity={0.4}/>
+                            <stop offset="95%" stopColor={goal.color} stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <YAxis domain={[0, 100]} hide />
+                        <Area
+                          type="monotone"
+                          dataKey={category}
+                          stroke={goal.color}
+                          strokeWidth={1.5}
+                          fill={`url(#mini-gradient-${category})`}
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div
+                        className="w-full h-[1px] opacity-30"
+                        style={{
+                          backgroundImage: `repeating-linear-gradient(to right, ${goal.color} 0, ${goal.color} 4px, transparent 4px, transparent 8px)`,
+                        }}
                       />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                    </div>
+                  )}
                 </div>
               </div>
 

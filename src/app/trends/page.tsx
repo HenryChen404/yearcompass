@@ -1,6 +1,6 @@
 /**
- * [INPUT]: 周记录数据 (mock), Recharts 图表库, GOALS 配置
- * [OUTPUT]: 趋势图页面 - 全屏布局展示目标进度趋势
+ * [INPUT]: useTrendData Hook, Recharts 图表库, GOALS 配置
+ * [OUTPUT]: 趋势图页面 - 全屏布局展示目标进度趋势（真实数据）
  * [POS]: App Router 趋势路由，展示目标进度的时间趋势
  *
  * [PROTOCOL]:
@@ -22,7 +22,8 @@ import {
   AreaChart,
   Area,
 } from 'recharts';
-import { GOALS, getCurrentWeek, YEAR_THEME, GOAL_CATEGORIES } from '@/core/goals';
+import { GOALS, getCurrentWeek, GOAL_CATEGORIES } from '@/core/goals';
+import { useTrendData, calculateChartPadding } from '@/hooks/useTrendData';
 import type { GoalCategory } from '@/types/goals';
 
 // 印象派画作 URLs
@@ -31,25 +32,10 @@ const ARTWORK_URLS = {
   renoir: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Pierre-Auguste_Renoir_-_Luncheon_of_the_Boating_Party_-_Google_Art_Project.jpg/1280px-Pierre-Auguste_Renoir_-_Luncheon_of_the_Boating_Party_-_Google_Art_Project.jpg',
 };
 
-// Mock data - 模拟过去 12 周的数据
-const generateMockData = () => {
-  const data = [];
-  for (let week = 1; week <= 12; week++) {
-    data.push({
-      week: `W${week}`,
-      work: Math.floor(40 + Math.random() * 40 + week * 2),
-      build: Math.floor(20 + Math.random() * 30 + week * 1.5),
-      health: Math.floor(50 + Math.random() * 35 + week * 2.5),
-      relationships: Math.floor(60 + Math.random() * 25 + week * 1),
-    });
-  }
-  return data;
-};
-
-const MOCK_TREND_DATA = generateMockData();
-
 export default function TrendsPage() {
   const { year, week, totalWeeks } = getCurrentWeek();
+  const { data: trendData, hasData, hasCategoryData, currentWeek } = useTrendData(12);
+  const padding = calculateChartPadding(trendData.length);
 
   const goalColors: Record<GoalCategory, string> = {
     work: GOALS.work.color,
@@ -100,7 +86,9 @@ export default function TrendsPage() {
           <div className="mb-6">
             <h2 className="text-headline mb-1">Progress Trends</h2>
             <p className="text-caption">
-              过去 12 周的目标完成趋势
+              {hasData
+                ? `W${trendData[0]?.week || 1} - W${currentWeek} 目标完成趋势`
+                : '开始在日历中添加任务来查看趋势'}
             </p>
           </div>
 
@@ -127,132 +115,162 @@ export default function TrendsPage() {
             </div>
 
             <div className="h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={MOCK_TREND_DATA}>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#E5E7EB"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="week"
-                    stroke="#9CA3AF"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={{ stroke: '#E5E7EB' }}
-                  />
-                  <YAxis
-                    stroke="#9CA3AF"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                    domain={[0, 100]}
-                    tickFormatter={(value) => `${value}%`}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#FFFFFF',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: 4,
-                    }}
-                    labelStyle={{ color: '#1A1A1A' }}
-                  />
-                  {GOAL_CATEGORIES.map((category) => (
-                    <Line
-                      key={category}
-                      type="monotone"
-                      dataKey={category}
-                      stroke={goalColors[category]}
-                      strokeWidth={2}
-                      dot={false}
-                      name={GOALS[category].name}
+              {hasData ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={trendData}
+                    margin={{ left: padding.left, right: padding.right }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#E5E7EB"
+                      vertical={false}
                     />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
+                    <XAxis
+                      dataKey="weekLabel"
+                      stroke="#9CA3AF"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={{ stroke: '#E5E7EB' }}
+                      padding={{ left: 20, right: 20 }}
+                    />
+                    <YAxis
+                      stroke="#9CA3AF"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      domain={[0, 100]}
+                      tickFormatter={(value) => `${value}%`}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#FFFFFF',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: 4,
+                      }}
+                      labelStyle={{ color: '#1A1A1A' }}
+                    />
+                    {GOAL_CATEGORIES.map((category) => (
+                      <Line
+                        key={category}
+                        type="monotone"
+                        dataKey={category}
+                        stroke={goalColors[category]}
+                        strokeWidth={2}
+                        dot={false}
+                        name={GOALS[category].name}
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-[var(--color-text-muted)]">
+                  暂无趋势数据
+                </div>
+              )}
             </div>
           </section>
 
           {/* Individual Charts Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {GOAL_CATEGORIES.map((category) => (
-              <section key={category} className="card p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: goalColors[category] }}
-                    />
-                    <h3 className="text-label text-[var(--color-text-primary)]">
-                      {GOALS[category].nameEn}
-                    </h3>
+            {GOAL_CATEGORIES.map((category) => {
+              const latestValue = trendData.length > 0
+                ? trendData[trendData.length - 1][category]
+                : 0;
+
+              return (
+                <section key={category} className="card p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: goalColors[category] }}
+                      />
+                      <h3 className="text-label text-[var(--color-text-primary)]">
+                        {GOALS[category].nameEn}
+                      </h3>
+                    </div>
+                    <span
+                      className="text-subhead font-mono"
+                      style={{ color: goalColors[category] }}
+                    >
+                      {latestValue}%
+                    </span>
                   </div>
-                  <span
-                    className="text-subhead font-mono"
-                    style={{ color: goalColors[category] }}
-                  >
-                    {MOCK_TREND_DATA[MOCK_TREND_DATA.length - 1][category]}%
-                  </span>
-                </div>
 
-                <div className="h-[120px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={MOCK_TREND_DATA}>
-                      <defs>
-                        <linearGradient id={`gradient-${category}`} x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={goalColors[category]} stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor={goalColors[category]} stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="#E5E7EB"
-                        vertical={false}
-                      />
-                      <XAxis
-                        dataKey="week"
-                        stroke="#9CA3AF"
-                        fontSize={10}
-                        tickLine={false}
-                        axisLine={false}
-                      />
-                      <YAxis
-                        stroke="#9CA3AF"
-                        fontSize={10}
-                        tickLine={false}
-                        axisLine={false}
-                        domain={[0, 100]}
-                        width={30}
-                        hide
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: '#FFFFFF',
-                          border: '1px solid #E5E7EB',
-                          borderRadius: 4,
-                          fontSize: 12,
-                        }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey={category}
-                        stroke={goalColors[category]}
-                        strokeWidth={2}
-                        fill={`url(#gradient-${category})`}
-                        name={GOALS[category].name}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
+                  <div className="h-[120px]">
+                    {hasCategoryData[category] ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart
+                          data={trendData}
+                          margin={{ left: padding.left, right: padding.right }}
+                        >
+                          <defs>
+                            <linearGradient id={`gradient-${category}`} x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor={goalColors[category]} stopOpacity={0.3}/>
+                              <stop offset="95%" stopColor={goalColors[category]} stopOpacity={0}/>
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            stroke="#E5E7EB"
+                            vertical={false}
+                          />
+                          <XAxis
+                            dataKey="weekLabel"
+                            stroke="#9CA3AF"
+                            fontSize={10}
+                            tickLine={false}
+                            axisLine={false}
+                          />
+                          <YAxis
+                            stroke="#9CA3AF"
+                            fontSize={10}
+                            tickLine={false}
+                            axisLine={false}
+                            domain={[0, 100]}
+                            width={30}
+                            hide
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: '#FFFFFF',
+                              border: '1px solid #E5E7EB',
+                              borderRadius: 4,
+                              fontSize: 12,
+                            }}
+                          />
+                          <Area
+                            type="monotone"
+                            dataKey={category}
+                            stroke={goalColors[category]}
+                            strokeWidth={2}
+                            fill={`url(#gradient-${category})`}
+                            name={GOALS[category].name}
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div
+                          className="w-full h-[1px] opacity-30"
+                          style={{
+                            backgroundImage: `repeating-linear-gradient(to right, ${goalColors[category]} 0, ${goalColors[category]} 4px, transparent 4px, transparent 8px)`,
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
 
-                {/* Goal Objective */}
-                <div className="mt-3 pt-3 border-t border-[var(--color-border)]">
-                  <p className="text-small text-[var(--color-text-secondary)] leading-relaxed">
-                    {GOALS[category].objective}
-                  </p>
-                </div>
-              </section>
-            ))}
+                  {/* Goal Objective */}
+                  <div className="mt-3 pt-3 border-t border-[var(--color-border)]">
+                    <p className="text-small text-[var(--color-text-secondary)] leading-relaxed">
+                      {GOALS[category].objective}
+                    </p>
+                  </div>
+                </section>
+              );
+            })}
           </div>
         </div>
       </main>

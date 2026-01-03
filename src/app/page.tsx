@@ -104,12 +104,14 @@ export default function HomePage() {
     setIsLoaded(true);
   }, [weekKey]);
 
-  // 保存到 localStorage
+  // 保存到 localStorage 并通知其他组件
   useEffect(() => {
     if (!isLoaded) return;
     const allData = loadFromStorage();
     allData[weekKey] = calendarTasks;
     saveToStorage(allData);
+    // 触发自定义事件通知 Trends 组件更新
+    window.dispatchEvent(new CustomEvent('yearcompass-data-update'));
   }, [calendarTasks, weekKey, isLoaded]);
 
   // 计算每个任务的完成进度
