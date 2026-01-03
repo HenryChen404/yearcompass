@@ -283,15 +283,15 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Mobile: Vertical Stack Layout */}
-      <div className="md:hidden flex-1 flex flex-col overflow-hidden pb-24">
+      {/* Mobile: Vertical Stack Layout - Full page scroll */}
+      <div className="md:hidden flex-1 overflow-auto pb-28">
         {/* Collapsible Trends */}
-        <div className="flex-shrink-0 mx-3 mt-3">
+        <div className="mx-3 mt-2">
           <TrendsSidebar progress={goalProgress} isCollapsible />
         </div>
 
-        {/* Week Navigation - Compact */}
-        <div className="flex-shrink-0 mx-3 mt-3 bg-white rounded-lg shadow-sm p-2">
+        {/* Week Navigation - Compact, sticky */}
+        <div className="sticky top-0 z-30 mx-3 mt-2 bg-white rounded-lg shadow-sm p-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
               <button
@@ -337,8 +337,8 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Calendar - Full width with horizontal scroll, takes remaining space */}
-        <div className="flex-1 mx-3 mt-3 mb-1 bg-white rounded-lg shadow-sm overflow-hidden min-h-[300px]">
+        {/* Calendar - Full height, scrollable within page */}
+        <div className="mx-3 mt-2 mb-2 bg-white rounded-lg shadow-sm overflow-hidden">
           <WeekCalendar
             weekDates={weekDates}
             tasks={calendarTasks}

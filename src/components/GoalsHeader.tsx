@@ -53,23 +53,21 @@ export function GoalsHeader({ progress }: GoalsHeaderProps) {
   return (
     <header className="flex-shrink-0 bg-white h-auto md:h-[40vh] flex flex-col">
       {/* Top Row - Branding */}
-      <div className="px-4 md:px-6 pt-3 pb-2 border-b border-[var(--color-border)] flex-shrink-0">
-        <div className="flex items-center justify-between">
+      <div className="px-4 md:px-6 pt-2 pb-1 md:pt-3 md:pb-2 border-b border-[var(--color-border)] flex-shrink-0">
+        <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-display text-lg tracking-[0.15em]">YEARCOMPASS</h1>
-            <p className="text-tiny text-[var(--color-text-secondary)]">{YEAR_THEME.title}</p>
+            <h1 className="text-display text-sm md:text-lg tracking-[0.15em] leading-tight">YEARCOMPASS</h1>
+            <p className="text-[10px] md:text-tiny text-[var(--color-text-secondary)]">{YEAR_THEME.title}</p>
           </div>
           {/* 2026 - Cowboy Bebop / Gundam inspired neon gradient */}
-          <div className="text-right">
-            <p
-              className="text-display text-lg font-mono tracking-wider bg-gradient-to-r from-[#FF6B6B] via-[#4ECDC4] to-[#45B7D1] bg-clip-text text-transparent animate-pulse"
-              style={{
-                textShadow: '0 0 20px rgba(78, 205, 196, 0.3)',
-              }}
-            >
-              {YEAR_THEME.year}
-            </p>
-          </div>
+          <p
+            className="text-display text-sm md:text-lg font-mono tracking-wider leading-tight bg-gradient-to-r from-[#FF6B6B] via-[#4ECDC4] to-[#45B7D1] bg-clip-text text-transparent animate-pulse"
+            style={{
+              textShadow: '0 0 20px rgba(78, 205, 196, 0.3)',
+            }}
+          >
+            {YEAR_THEME.year}
+          </p>
         </div>
       </div>
 

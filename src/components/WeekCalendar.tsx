@@ -88,12 +88,12 @@ export function WeekCalendar({
   }, [onCellClick]);
 
   return (
-    <div className="bg-white border border-[var(--color-border)] rounded overflow-hidden flex flex-col h-full">
+    <div className="bg-white border border-[var(--color-border)] rounded overflow-hidden flex flex-col md:h-full">
       {/* Art strip at top */}
       <div className="art-strip flex-shrink-0" />
 
-      {/* Scrollable container for mobile */}
-      <div className="flex-1 overflow-auto">
+      {/* Mobile: show full calendar, Desktop: scrollable within container */}
+      <div className="md:flex-1 md:overflow-auto overflow-x-auto">
         <div className="min-w-[500px] md:min-w-0">
           {/* Header Row */}
           <div className="grid grid-cols-[40px_repeat(7,minmax(60px,1fr))] md:grid-cols-[50px_repeat(7,1fr)] border-b border-[var(--color-border)] flex-shrink-0 sticky top-0 z-20 bg-white">
