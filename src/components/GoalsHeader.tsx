@@ -52,7 +52,7 @@ const GOAL_ARTWORKS: Record<GoalCategory, { url: string; title: string; artist: 
 
 export function GoalsHeader({ progress, showBrandBar = true }: GoalsHeaderProps) {
   return (
-    <header className="flex-shrink-0 bg-white h-auto md:h-[40vh] flex flex-col">
+    <header className="flex-shrink-0 bg-white flex flex-col">
       {/* Top Row - Branding (can be hidden on mobile when rendered separately) */}
       {showBrandBar && (
         <div className="px-4 md:px-6 pt-2 pb-1 md:pt-3 md:pb-2 border-b border-[var(--color-border)] flex-shrink-0">
@@ -75,9 +75,9 @@ export function GoalsHeader({ progress, showBrandBar = true }: GoalsHeaderProps)
       )}
 
       {/* Goals Row - MET Exhibition Card Style */}
-      <div className="px-4 md:px-8 py-3 flex-1 min-h-0">
+      <div className="px-4 md:px-8 py-3">
         {/* Responsive grid: 2x2 on mobile, 4 columns on desktop */}
-        <div className="h-full grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
           {GOAL_CATEGORIES.map((category) => {
             const goal = GOALS[category];
             const prog = progress[category];
@@ -85,9 +85,9 @@ export function GoalsHeader({ progress, showBrandBar = true }: GoalsHeaderProps)
             const percentage = prog.target > 0 ? Math.round((prog.completed / prog.target) * 100) : 0;
 
             return (
-              <div key={category} className="group cursor-pointer flex flex-col h-full min-h-0">
-                {/* Artwork Image - flex-1 with min-h-0 to allow shrinking */}
-                <div className="flex-1 min-h-0 h-20 md:h-auto overflow-hidden rounded-sm mb-1 md:mb-2 bg-[var(--color-bg-secondary)]">
+              <div key={category} className="group cursor-pointer flex flex-col">
+                {/* Artwork Image - fixed aspect ratio for consistent sizing */}
+                <div className="aspect-[4/3] overflow-hidden rounded-sm mb-1 md:mb-2 bg-[var(--color-bg-secondary)]">
                   <img
                     src={artwork.url}
                     alt={artwork.title}
