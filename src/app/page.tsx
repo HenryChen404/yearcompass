@@ -16,7 +16,7 @@ import { TrendsSidebar } from '@/components/TrendsSidebar';
 import { WeekCalendar } from '@/components/WeekCalendar';
 import { TaskSidebar } from '@/components/TaskSidebar';
 import { MobileTaskBar } from '@/components/MobileTaskBar';
-import { getCurrentWeek, getWeekDates, TASKS } from '@/core/goals';
+import { getCurrentWeek, getWeekDates, TASKS, YEAR_THEME } from '@/core/goals';
 import type { CalendarTask, GoalCategory, TaskDefinition } from '@/types/goals';
 
 // 生成唯一 ID
@@ -196,8 +196,25 @@ export default function HomePage() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-[var(--color-bg-secondary)]">
-      {/* Top Header - Goals */}
-      <GoalsHeader progress={goalProgress} />
+      {/* Desktop: Full Header */}
+      <div className="hidden md:block">
+        <GoalsHeader progress={goalProgress} />
+      </div>
+
+      {/* Mobile: Sticky Brand Bar only */}
+      <div className="md:hidden sticky top-0 z-40 bg-white border-b border-[var(--color-border)] px-4 py-2">
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-display text-sm tracking-[0.15em] leading-tight">YEARCOMPASS</h1>
+            <p className="text-[10px] text-[var(--color-text-secondary)]">{YEAR_THEME.title}</p>
+          </div>
+          <p
+            className="text-display text-sm font-mono tracking-wider leading-tight bg-gradient-to-r from-[#FF6B6B] via-[#4ECDC4] to-[#45B7D1] bg-clip-text text-transparent animate-pulse"
+          >
+            {YEAR_THEME.year}
+          </p>
+        </div>
+      </div>
 
       {/* Desktop: Three Columns Layout */}
       <div className="hidden md:flex h-[60vh] overflow-hidden p-4 gap-4">
@@ -285,12 +302,17 @@ export default function HomePage() {
 
       {/* Mobile: Vertical Stack Layout - Full page scroll */}
       <div className="md:hidden flex-1 overflow-auto pb-28">
+        {/* Goals Cards - scrollable, can be scrolled away */}
+        <div className="bg-white">
+          <GoalsHeader progress={goalProgress} showBrandBar={false} />
+        </div>
+
         {/* Collapsible Trends */}
         <div className="mx-3 mt-2">
           <TrendsSidebar progress={goalProgress} isCollapsible />
         </div>
 
-        {/* Week Navigation - Compact, sticky */}
+        {/* Week Navigation - Compact, sticky within scroll container */}
         <div className="sticky top-0 z-30 mx-3 mt-2 bg-white rounded-lg shadow-sm p-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">

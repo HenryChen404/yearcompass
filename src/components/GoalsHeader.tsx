@@ -20,6 +20,7 @@ interface ProgressData {
 
 interface GoalsHeaderProps {
   progress: Record<GoalCategory, ProgressData>;
+  showBrandBar?: boolean; // For mobile: brand bar is rendered separately
 }
 
 // 每个目标对应的画作 - MET展览风格 (使用 /thumb/ 格式确保可靠加载)
@@ -49,27 +50,29 @@ const GOAL_ARTWORKS: Record<GoalCategory, { url: string; title: string; artist: 
   },
 };
 
-export function GoalsHeader({ progress }: GoalsHeaderProps) {
+export function GoalsHeader({ progress, showBrandBar = true }: GoalsHeaderProps) {
   return (
     <header className="flex-shrink-0 bg-white h-auto md:h-[40vh] flex flex-col">
-      {/* Top Row - Branding */}
-      <div className="px-4 md:px-6 pt-2 pb-1 md:pt-3 md:pb-2 border-b border-[var(--color-border)] flex-shrink-0">
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-display text-sm md:text-lg tracking-[0.15em] leading-tight">YEARCOMPASS</h1>
-            <p className="text-[10px] md:text-tiny text-[var(--color-text-secondary)]">{YEAR_THEME.title}</p>
+      {/* Top Row - Branding (can be hidden on mobile when rendered separately) */}
+      {showBrandBar && (
+        <div className="px-4 md:px-6 pt-2 pb-1 md:pt-3 md:pb-2 border-b border-[var(--color-border)] flex-shrink-0">
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-display text-sm md:text-lg tracking-[0.15em] leading-tight">YEARCOMPASS</h1>
+              <p className="text-[10px] md:text-tiny text-[var(--color-text-secondary)]">{YEAR_THEME.title}</p>
+            </div>
+            {/* 2026 - Cowboy Bebop / Gundam inspired neon gradient */}
+            <p
+              className="text-display text-sm md:text-lg font-mono tracking-wider leading-tight bg-gradient-to-r from-[#FF6B6B] via-[#4ECDC4] to-[#45B7D1] bg-clip-text text-transparent animate-pulse"
+              style={{
+                textShadow: '0 0 20px rgba(78, 205, 196, 0.3)',
+              }}
+            >
+              {YEAR_THEME.year}
+            </p>
           </div>
-          {/* 2026 - Cowboy Bebop / Gundam inspired neon gradient */}
-          <p
-            className="text-display text-sm md:text-lg font-mono tracking-wider leading-tight bg-gradient-to-r from-[#FF6B6B] via-[#4ECDC4] to-[#45B7D1] bg-clip-text text-transparent animate-pulse"
-            style={{
-              textShadow: '0 0 20px rgba(78, 205, 196, 0.3)',
-            }}
-          >
-            {YEAR_THEME.year}
-          </p>
         </div>
-      </div>
+      )}
 
       {/* Goals Row - MET Exhibition Card Style */}
       <div className="px-4 md:px-8 py-3 flex-1 min-h-0">
