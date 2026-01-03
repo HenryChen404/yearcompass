@@ -10,6 +10,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import {
   AreaChart,
@@ -28,15 +29,82 @@ interface ProgressData {
 
 interface TrendsSidebarProps {
   progress: Record<GoalCategory, ProgressData>;
+  isCollapsible?: boolean;  // For mobile: show as collapsible section
 }
 
 // 梵高杏花 - Almond Blossoms
 const ARTWORK_URL = 'https://upload.wikimedia.org/wikipedia/commons/6/68/Vincent_van_Gogh_-_Almond_blossom_-_Google_Art_Project.jpg';
 
-export function TrendsSidebar({ progress }: TrendsSidebarProps) {
-  const { data: trendData, currentWeek, hasData, hasCategoryData } = useTrendData(8);
+export function TrendsSidebar({ progress, isCollapsible = false }: TrendsSidebarProps) {
+  const { data: trendData, hasData, hasCategoryData } = useTrendData(8);
   const padding = calculateChartPadding(trendData.length);
+  const [isExpanded, setIsExpanded] = useState(false);
 
+  // Collapsible version for mobile
+  if (isCollapsible) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        {/* Collapsible Header */}
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full flex items-center justify-between p-3 border-b border-[var(--color-border)]"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-label tracking-wider">TRENDS</span>
+            <span className="text-tiny text-[var(--color-text-muted)]">
+              {hasData ? `W${trendData[0]?.week || 1} - W${trendData[trendData.length - 1]?.week}` : '暂无数据'}
+            </span>
+          </div>
+          <span className="text-sm text-[var(--color-text-muted)]">
+            {isExpanded ? '▲' : '▼'}
+          </span>
+        </button>
+
+        {/* Collapsible Content */}
+        {isExpanded && (
+          <div className="p-3 space-y-2">
+            {GOAL_CATEGORIES.map((category) => {
+              const goal = GOALS[category];
+              const prog = progress[category];
+              const percentage = prog.target > 0
+                ? Math.round((prog.completed / prog.target) * 100)
+                : 0;
+
+              return (
+                <div key={category} className="flex items-center gap-2">
+                  <div
+                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: goal.color }}
+                  />
+                  <span className="text-tiny flex-1">{goal.nameEn}</span>
+                  <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${percentage}%`,
+                        backgroundColor: goal.color
+                      }}
+                    />
+                  </div>
+                  <span className="text-tiny font-mono w-8 text-right" style={{ color: goal.color }}>
+                    {percentage}%
+                  </span>
+                </div>
+              );
+            })}
+            <Link
+              href="/trends"
+              className="text-small text-[var(--color-accent-primary)] hover:underline block mt-2"
+            >
+              View Full Trends →
+            </Link>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Original desktop version
   return (
     <aside className="w-48 flex-shrink-0 bg-white rounded-lg shadow-sm h-full flex flex-col overflow-hidden">
       {/* Header with Artwork Background */}

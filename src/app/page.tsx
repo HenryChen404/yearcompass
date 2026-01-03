@@ -15,8 +15,9 @@ import { GoalsHeader } from '@/components/GoalsHeader';
 import { TrendsSidebar } from '@/components/TrendsSidebar';
 import { WeekCalendar } from '@/components/WeekCalendar';
 import { TaskSidebar } from '@/components/TaskSidebar';
+import { MobileTaskBar } from '@/components/MobileTaskBar';
 import { getCurrentWeek, getWeekDates, TASKS } from '@/core/goals';
-import type { CalendarTask, GoalCategory } from '@/types/goals';
+import type { CalendarTask, GoalCategory, TaskDefinition } from '@/types/goals';
 
 // 生成唯一 ID
 const generateId = () => Math.random().toString(36).substr(2, 9);
@@ -95,6 +96,9 @@ export default function HomePage() {
   // 日历任务状态
   const [calendarTasks, setCalendarTasks] = useState<CalendarTask[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  // Mobile: selected task for click-to-add mode
+  const [selectedTask, setSelectedTask] = useState<TaskDefinition | null>(null);
 
   // 从 localStorage 加载当前周的任务
   useEffect(() => {
@@ -175,13 +179,28 @@ export default function HomePage() {
     setCalendarTasks((prev) => prev.filter((task) => task.id !== taskId));
   }, []);
 
+  // Mobile: handle cell click for click-to-add mode
+  const handleCellClick = useCallback((dayIndex: number, hour: number) => {
+    if (selectedTask) {
+      handleTaskAdd({
+        taskId: selectedTask.id,
+        category: selectedTask.category,
+        name: selectedTask.nameShort,
+        dayIndex,
+        startHour: hour,
+        duration: selectedTask.defaultDuration,
+      });
+      setSelectedTask(null);
+    }
+  }, [selectedTask, handleTaskAdd]);
+
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-[var(--color-bg-secondary)]">
       {/* Top Header - Goals */}
       <GoalsHeader progress={goalProgress} />
 
-      {/* Main Content Area - Three Columns with gaps (60vh) */}
-      <div className="h-[60vh] flex overflow-hidden p-4 gap-4">
+      {/* Desktop: Three Columns Layout */}
+      <div className="hidden md:flex h-[60vh] overflow-hidden p-4 gap-4">
         {/* Left Sidebar - Trends */}
         <div className="flex-shrink-0">
           <TrendsSidebar progress={goalProgress} />
@@ -189,12 +208,11 @@ export default function HomePage() {
 
         {/* Center - Calendar */}
         <main className="flex-1 flex flex-col overflow-hidden bg-white rounded-lg shadow-sm">
-          {/* Week Header with Navigation - h-16 to align with sidebars */}
+          {/* Week Header with Navigation */}
           <div className="flex-shrink-0 h-16 border-b border-[var(--color-border)] px-4 flex items-center">
             <div className="flex items-center justify-between w-full">
               {/* Left: Week Selector */}
               <div className="flex items-center gap-2">
-                {/* Prev Button */}
                 <button
                   onClick={goToPrevWeek}
                   disabled={selectedWeek <= 1}
@@ -204,7 +222,6 @@ export default function HomePage() {
                   <span className="text-sm">‹</span>
                 </button>
 
-                {/* Week Dropdown */}
                 <select
                   value={selectedWeek}
                   onChange={handleWeekChange}
@@ -217,7 +234,6 @@ export default function HomePage() {
                   ))}
                 </select>
 
-                {/* Next Button */}
                 <button
                   onClick={goToNextWeek}
                   disabled={selectedWeek >= totalWeeks}
@@ -227,7 +243,6 @@ export default function HomePage() {
                   <span className="text-sm">›</span>
                 </button>
 
-                {/* Today Button */}
                 {(selectedWeek !== currentWeekInfo.week || selectedYear !== currentWeekInfo.year) && (
                   <button
                     onClick={goToCurrentWeek}
@@ -266,6 +281,81 @@ export default function HomePage() {
         <div className="flex-shrink-0">
           <TaskSidebar taskProgress={taskProgress} />
         </div>
+      </div>
+
+      {/* Mobile: Vertical Stack Layout */}
+      <div className="md:hidden flex-1 flex flex-col overflow-hidden pb-20">
+        {/* Collapsible Trends */}
+        <div className="flex-shrink-0 mx-3 mt-3">
+          <TrendsSidebar progress={goalProgress} isCollapsible />
+        </div>
+
+        {/* Week Navigation - Compact */}
+        <div className="flex-shrink-0 mx-3 mt-3 bg-white rounded-lg shadow-sm p-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={goToPrevWeek}
+                disabled={selectedWeek <= 1}
+                className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 disabled:opacity-30"
+              >
+                ‹
+              </button>
+
+              <select
+                value={selectedWeek}
+                onChange={handleWeekChange}
+                className="text-sm bg-transparent border border-gray-200 rounded px-2 py-1"
+              >
+                {weekOptions.map((option) => (
+                  <option key={option.week} value={option.week}>
+                    W{option.week}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                onClick={goToNextWeek}
+                disabled={selectedWeek >= totalWeeks}
+                className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-100 disabled:opacity-30"
+              >
+                ›
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <span>{selectedYear}</span>
+              {(selectedWeek !== currentWeekInfo.week || selectedYear !== currentWeekInfo.year) && (
+                <button
+                  onClick={goToCurrentWeek}
+                  className="text-[var(--color-accent-primary)] hover:underline"
+                >
+                  Today
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Calendar - Full width with horizontal scroll */}
+        <div className="flex-1 mx-3 mt-3 bg-white rounded-lg shadow-sm overflow-hidden">
+          <WeekCalendar
+            weekDates={weekDates}
+            tasks={calendarTasks}
+            onTaskAdd={handleTaskAdd}
+            onTaskUpdate={handleTaskUpdate}
+            onTaskRemove={handleTaskRemove}
+            selectedTask={selectedTask}
+            onCellClick={handleCellClick}
+          />
+        </div>
+
+        {/* Mobile Task Bar - Fixed at bottom */}
+        <MobileTaskBar
+          taskProgress={taskProgress}
+          selectedTask={selectedTask}
+          onSelectTask={setSelectedTask}
+        />
       </div>
     </div>
   );

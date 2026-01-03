@@ -46,8 +46,8 @@ export default function TrendsPage() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-[var(--color-bg-primary)]">
-      {/* Header with artwork - Larger display */}
-      <header className="flex-shrink-0 relative h-32 overflow-hidden">
+      {/* Header with artwork - Responsive */}
+      <header className="flex-shrink-0 relative h-20 md:h-32 overflow-hidden">
         <img
           src={ARTWORK_URLS.monet}
           alt="Monet - Water Lilies"
@@ -55,58 +55,58 @@ export default function TrendsPage() {
           style={{ objectPosition: 'center 40%' }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/20 to-white/90" />
-        <div className="absolute inset-0 flex items-end justify-between px-6 pb-4">
-          <div className="flex items-center gap-4">
+        <div className="absolute inset-0 flex items-end justify-between px-4 md:px-6 pb-2 md:pb-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <Link
               href="/"
-              className="text-display text-xl hover:opacity-70 transition-opacity"
+              className="text-display text-base md:text-xl hover:opacity-70 transition-opacity"
             >
               YEARCOMPASS
             </Link>
-            <span className="text-body-sm text-[var(--color-text-secondary)]">/ Trends</span>
+            <span className="hidden md:inline text-body-sm text-[var(--color-text-secondary)]">/ Trends</span>
           </div>
-          <div className="flex items-center gap-6">
-            <span className="text-body-sm font-mono text-[var(--color-text-secondary)]">
-              {year} · Week {week} / {totalWeeks}
+          <div className="flex items-center gap-2 md:gap-6">
+            <span className="text-xs md:text-body-sm font-mono text-[var(--color-text-secondary)]">
+              W{week}/{totalWeeks}
             </span>
             <Link
               href="/"
-              className="text-body-sm text-[var(--color-accent-primary)] hover:underline"
+              className="text-xs md:text-body-sm text-[var(--color-accent-primary)] hover:underline"
             >
-              ← Back to Calendar
+              ← Back
             </Link>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto p-6">
+      <main className="flex-1 overflow-auto p-3 md:p-6">
         <div className="max-w-6xl mx-auto">
           {/* Page Title */}
-          <div className="mb-6">
-            <h2 className="text-headline mb-1">Progress Trends</h2>
-            <p className="text-caption">
+          <div className="mb-4 md:mb-6">
+            <h2 className="text-lg md:text-headline mb-1">Progress Trends</h2>
+            <p className="text-xs md:text-caption text-[var(--color-text-secondary)]">
               {hasData
-                ? `W${trendData[0]?.week || 1} - W${currentWeek} 目标完成趋势`
+                ? `W${trendData[0]?.week || 1} - W${trendData[trendData.length - 1]?.week} 目标完成趋势`
                 : '开始在日历中添加任务来查看趋势'}
             </p>
           </div>
 
           {/* Combined Chart */}
-          <section className="card p-6 mb-6">
-            <div className="flex items-center justify-between mb-6">
+          <section className="card p-3 md:p-6 mb-4 md:mb-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 md:mb-6 gap-2">
               <h3 className="text-label text-[var(--color-text-primary)]">
                 ALL GOALS OVERVIEW
               </h3>
-              {/* Legend */}
-              <div className="flex flex-wrap gap-6">
+              {/* Legend - horizontal scroll on mobile */}
+              <div className="flex flex-wrap gap-3 md:gap-6">
                 {GOAL_CATEGORIES.map((category) => (
-                  <div key={category} className="flex items-center gap-2">
+                  <div key={category} className="flex items-center gap-1 md:gap-2">
                     <div
-                      className="w-3 h-[2px]"
+                      className="w-2 md:w-3 h-[2px]"
                       style={{ backgroundColor: goalColors[category] }}
                     />
-                    <span className="text-small text-[var(--color-text-secondary)]">
+                    <span className="text-[10px] md:text-small text-[var(--color-text-secondary)]">
                       {GOALS[category].nameEn}
                     </span>
                   </div>
@@ -114,7 +114,7 @@ export default function TrendsPage() {
               </div>
             </div>
 
-            <div className="h-[280px]">
+            <div className="h-[200px] md:h-[280px]">
               {hasData ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
@@ -172,33 +172,33 @@ export default function TrendsPage() {
           </section>
 
           {/* Individual Charts Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
             {GOAL_CATEGORIES.map((category) => {
               const latestValue = trendData.length > 0
                 ? trendData[trendData.length - 1][category]
                 : 0;
 
               return (
-                <section key={category} className="card p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
+                <section key={category} className="card p-3 md:p-5">
+                  <div className="flex items-center justify-between mb-2 md:mb-4">
+                    <div className="flex items-center gap-1.5 md:gap-2">
                       <div
-                        className="w-2.5 h-2.5 rounded-full"
+                        className="w-2 md:w-2.5 h-2 md:h-2.5 rounded-full"
                         style={{ backgroundColor: goalColors[category] }}
                       />
-                      <h3 className="text-label text-[var(--color-text-primary)]">
+                      <h3 className="text-sm md:text-label text-[var(--color-text-primary)]">
                         {GOALS[category].nameEn}
                       </h3>
                     </div>
                     <span
-                      className="text-subhead font-mono"
+                      className="text-sm md:text-subhead font-mono"
                       style={{ color: goalColors[category] }}
                     >
                       {latestValue}%
                     </span>
                   </div>
 
-                  <div className="h-[120px]">
+                  <div className="h-[80px] md:h-[120px]">
                     {hasCategoryData[category] ? (
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart
@@ -262,8 +262,8 @@ export default function TrendsPage() {
                     )}
                   </div>
 
-                  {/* Goal Objective */}
-                  <div className="mt-3 pt-3 border-t border-[var(--color-border)]">
+                  {/* Goal Objective - hidden on mobile to save space */}
+                  <div className="hidden md:block mt-3 pt-3 border-t border-[var(--color-border)]">
                     <p className="text-small text-[var(--color-text-secondary)] leading-relaxed">
                       {GOALS[category].objective}
                     </p>
@@ -275,8 +275,8 @@ export default function TrendsPage() {
         </div>
       </main>
 
-      {/* Bottom artwork strip */}
-      <div className="flex-shrink-0 h-12 overflow-hidden opacity-30">
+      {/* Bottom artwork strip - hidden on mobile */}
+      <div className="hidden md:block flex-shrink-0 h-12 overflow-hidden opacity-30">
         <img
           src={ARTWORK_URLS.renoir}
           alt="Renoir - Luncheon of the Boating Party"

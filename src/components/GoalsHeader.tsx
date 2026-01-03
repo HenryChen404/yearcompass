@@ -51,7 +51,7 @@ const GOAL_ARTWORKS: Record<GoalCategory, { url: string; title: string; artist: 
 
 export function GoalsHeader({ progress }: GoalsHeaderProps) {
   return (
-    <header className="flex-shrink-0 bg-white h-[40vh] flex flex-col">
+    <header className="flex-shrink-0 bg-white h-auto md:h-[40vh] flex flex-col">
       {/* Top Row - Branding */}
       <div className="px-6 pt-3 pb-2 border-b border-[var(--color-border)] flex-shrink-0">
         <div className="flex items-center justify-between">
@@ -66,17 +66,19 @@ export function GoalsHeader({ progress }: GoalsHeaderProps) {
       </div>
 
       {/* Goals Row - MET Exhibition Card Style */}
-      <div className="px-8 py-3 flex-1 min-h-0">
-        <div className="h-full grid grid-cols-4 gap-6">
+      <div className="px-4 md:px-8 py-3 flex-1 min-h-0">
+        {/* Responsive grid: 2x2 on mobile, 4 columns on desktop */}
+        <div className="h-full grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
           {GOAL_CATEGORIES.map((category) => {
             const goal = GOALS[category];
             const prog = progress[category];
             const artwork = GOAL_ARTWORKS[category];
+            const percentage = prog.target > 0 ? Math.round((prog.completed / prog.target) * 100) : 0;
 
             return (
               <div key={category} className="group cursor-pointer flex flex-col h-full min-h-0">
                 {/* Artwork Image - flex-1 with min-h-0 to allow shrinking */}
-                <div className="flex-1 min-h-0 overflow-hidden rounded-sm mb-2 bg-[var(--color-bg-secondary)]">
+                <div className="flex-1 min-h-0 h-20 md:h-auto overflow-hidden rounded-sm mb-1 md:mb-2 bg-[var(--color-bg-secondary)]">
                   <img
                     src={artwork.url}
                     alt={artwork.title}
@@ -90,27 +92,41 @@ export function GoalsHeader({ progress }: GoalsHeaderProps) {
                 </div>
 
                 {/* Layer 1: Direction - 方向 */}
-                <h3 className="flex-shrink-0 text-sm font-semibold text-black tracking-wide text-left">
+                <h3 className="flex-shrink-0 text-xs md:text-sm font-semibold text-black tracking-wide text-left">
                   {goal.nameEn}
                 </h3>
 
-                {/* Layer 2: Objective - 目标 */}
-                <p className="flex-shrink-0 text-xs text-black/90 leading-snug text-left">
+                {/* Layer 2: Objective - 目标 (hidden on mobile) */}
+                <p className="hidden md:block flex-shrink-0 text-xs text-black/90 leading-snug text-left">
                   {goal.objective}
                 </p>
 
-                {/* Layer 3: Metrics - 指标 */}
-                <p className="flex-shrink-0 text-[11px] text-black/70 leading-snug text-left mt-0.5">
+                {/* Mobile: Progress bar */}
+                <div className="md:hidden mt-1">
+                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${percentage}%`,
+                        backgroundColor: goal.color
+                      }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-black/50 mt-0.5">
+                    {prog.completed}/{prog.target}
+                  </p>
+                </div>
+
+                {/* Desktop only: Metrics, Actions, Progress */}
+                <p className="hidden md:block flex-shrink-0 text-[11px] text-black/70 leading-snug text-left mt-0.5">
                   指标: {goal.metrics[0]}
                 </p>
 
-                {/* Layer 4: Actions - 动作 */}
-                <p className="flex-shrink-0 text-[10px] text-black/50 leading-snug line-clamp-1 text-left">
+                <p className="hidden md:block flex-shrink-0 text-[10px] text-black/50 leading-snug line-clamp-1 text-left">
                   动作: {goal.actions[0]}
                 </p>
 
-                {/* Progress - Smallest text */}
-                <p className="flex-shrink-0 text-[10px] text-black/50 mt-0.5 text-left">
+                <p className="hidden md:block flex-shrink-0 text-[10px] text-black/50 mt-0.5 text-left">
                   {prog.completed}/{prog.target}
                 </p>
               </div>
@@ -119,8 +135,8 @@ export function GoalsHeader({ progress }: GoalsHeaderProps) {
         </div>
       </div>
 
-      {/* Bottom Lines - Centered italic text */}
-      <div className="px-6 pb-2 flex-shrink-0">
+      {/* Bottom Lines - Centered italic text (hidden on mobile) */}
+      <div className="hidden md:block px-6 pb-2 flex-shrink-0">
         <div className="flex items-center justify-center gap-4 flex-wrap">
           {BOTTOM_LINES.map((line, i) => (
             <span
